@@ -21,7 +21,7 @@ def format_output(data):
     for item in data:
         list_temp.append(item)
     # remove formatting from string and turn into list
-    str_temp = str(list_temp).replace("{","").replace("}","").replace("'childseries': ","").replace("'","").replace("[[","[").replace("]]","]")
+    str_temp = str(list_temp).replace("{","").replace("}","").replace("'childseries': ","").replace("'","").replace("[[","[").replace("]]","]").replace("[","")
     api_query_vals = str_temp.split(", ")
     api_query_vals_kwh = [series for series in api_query_vals if 'BKWH' in series]
     return api_query_vals_kwh
@@ -76,19 +76,23 @@ fields = [
 
 def call_api_insert(url,payload,series_list):
     for series_id in series_list:
-        result = single_api_query(url,payload,series_id)['category']['childcategories']
-        for item in result:
-            my_data = [item[field] for field in fields]
-            insert_query = "INSERT INTO net_generation VALUES (%s, %s, %s, %s, %s)"
-            cur.execute(insert_query, tuple(my_data))
+        result = single_api_query(url,payload,series_id)
+        data = result['series'][0]['data']
+        name = result['series'][0]['name']
+        units = result['series'][0]['units']
+        for item in data:
+            year = item[0]
+            value = item[1]
+            insert_vals = [name, year, value, units]
+            insert_query = "INSERT INTO net_generation VALUES (%s, %s, %s, %s)"
+            cur.execute(insert_query, tuple(insert_vals))
             conn.commit()
 
 
 if __name__ == '__main__':
     # Define API URLs and API key
-    net_generation_series = 'http://api.eia.gov/category/?series_id='
-    net_generation_cat_series = 'http://api.eia.gov/category/?category_id=2134668&series_id='
-    installed_capacity_series = 'http://api.eia.gov/category/?series_id='
+    net_generation_series = 'http://api.eia.gov/series/?series_id='
+    installed_capacity_series = 'http://api.eia.gov/series/?series_id='
     # MVP+ us_demand = 'http://api.eia.gov/category/?series_id=EBA.US48-ALL.D.H'
     payload = {'api_key': os.environ['EIA_API_KEY']}
     generation_table = 'net_generation'
