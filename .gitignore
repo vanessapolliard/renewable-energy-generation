@@ -1,2 +1,5 @@
 src/.ipynb_checkpoints/Untitled-checkpoint.ipynb
 src/.ipynb_checkpoints/ImportTests-checkpoint.ipynb
+src/.vscode
+src/.ipynb_checkpoints
+data/.DS_Store
