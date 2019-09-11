@@ -1,21 +1,29 @@
+from bson.json_util import loads
+from pymongo import MongoClient
 import requests
 import os, sys
 import time
-from bson.json_util import loads
 import psycopg2
 import getpass
-from pymongo import MongoClient
+import this
 
-# MONGO
-# find series IDs to use in API calls for Generation (need to do consumption as well)
-# mongoimport --db renewable_energy --collection bulk_import < INTL.txt
-client = MongoClient('localhost',27017)
-db = client['renewable_energy']
-table = db['bulk_import'] # includes all keys needed to pull from specific API series_ids for generation and capacity
+# OTHER MONGO - mongoimport --db renewable_energy --collection bulk_import < INTL.txt
+# OTHER POSTGRES - created PostgreSQL database outside of script in docker container
 
-generation_category = db.bulk_import.find({'category_id': '2134668'},{'childseries': 1,'_id': 0})
-capacity_category = db.bulk_import.find({'category_id': '2134665'},{'childseries': 1,'_id': 0})
+def housekeeping():
+    # globals
+    globals conn, cur
+    # connect to mongo
+    client = MongoClient('localhost',27017)
+    db = client['renewable_energy']
+    table = db['bulk_import'] # includes all keys needed to pull from specific API series_ids for generation and capacity
+    # connect to postgres
+    upass = getpass.getpass()
+    conn = psycopg2.connect(database="renewable_energy_generation", user="admin", password=upass, host="localhost", port="5432")
+    print("connected")
+    cur = conn.cursor()
 
+# Format Mongo output
 def format_output(data):
     list_temp = []
     for item in data:
@@ -40,32 +48,9 @@ def single_api_query(link, payload, series=None):
         api_response = response.json()
         return api_response
 
-# created PostgreSQL database outside of script in docker container
-# connect to database
-upass = getpass.getpass()
-conn = psycopg2.connect(database="renewable_energy_generation", user="admin", password=upass, host="localhost", port="5432")
-print("connected")
-
-cur = conn.cursor()
-query = '''
-            CREATE TABLE net_generation (
-                country varchar,
-                period varchar,
-                value varchar,
-                units varchar
-            );
-            '''
-query2 = '''
-            CREATE TABLE installed_capacity (
-                country varchar,
-                period varchar,
-                value varchar,
-                units varchar
-            );
-            '''
-cur.execute(query)
-cur.execute(query2)
-conn.commit()
+def run_query(query):
+    cur.execute(query)
+    conn.commit()
 
 
 def call_api_insert(url,payload,series_list,table):
@@ -95,10 +80,39 @@ if __name__ == '__main__':
     generation_table = 'net_generation'
     capacity_table = 'installed_capacity'
 
-    # FULL RUN
+    create_generation_table = '''
+                CREATE TABLE net_generation (
+                    country varchar,
+                    period varchar,
+                    value varchar,
+                    units varchar
+                );
+                '''
+    creation_capacity_table = '''
+                CREATE TABLE installed_capacity (
+                    country varchar,
+                    period varchar,
+                    value varchar,
+                    units varchar
+                );
+                '''
+
+    # connect to DBs
+    housekeeping()
+
+    # create tables
+    run_query(create_generation_table)
+    run_query(creation_capacity_table)
+
+    # find series IDs to use in API calls
+    generation_category = db.bulk_import.find({'category_id': '2134668'},{'childseries': 1,'_id': 0})
+    capacity_category = db.bulk_import.find({'category_id': '2134665'},{'childseries': 1,'_id': 0})
+    
+    # format series lists
     series_list1 = format_output(generation_category)
     series_list2 = format_output(capacity_category)
 
+    # call APIs for all series and insert into postgres table
     call_api_insert(net_generation_series,payload,series_list1,generation_table)
     call_api_insert(installed_capacity_series,payload,series_list2,capacity_table)
 
