@@ -5,14 +5,13 @@ import os, sys
 import time
 import psycopg2
 import getpass
-import this
 
 # OTHER MONGO - mongoimport --db renewable_energy --collection bulk_import < INTL.txt
 # OTHER POSTGRES - created PostgreSQL database outside of script in docker container
 
 def housekeeping():
     # globals
-    globals conn, cur
+    global conn, cur, db, table
     # connect to mongo
     client = MongoClient('localhost',27017)
     db = client['renewable_energy']
@@ -60,8 +59,12 @@ def call_api_insert(url,payload,series_list,table):
         name = result['series'][0]['name'].split(',')[1].replace(" ","")
         units = result['series'][0]['units']
         for item in data:
-            year = item[0]
+            year = int(item[0])
             value = item[1]
+            if value == '--':
+                value = None
+            else:
+                value = float(item[1])
             insert_vals = [name, year, value, units]
             if table == generation_table:
                 insert_query = "INSERT INTO net_generation VALUES (%s, %s, %s, %s)"
@@ -83,16 +86,16 @@ if __name__ == '__main__':
     create_generation_table = '''
                 CREATE TABLE net_generation (
                     country varchar,
-                    period varchar,
-                    value varchar,
+                    period int,
+                    value float,
                     units varchar
                 );
                 '''
     creation_capacity_table = '''
                 CREATE TABLE installed_capacity (
                     country varchar,
-                    period varchar,
-                    value varchar,
+                    period int,
+                    value float,
                     units varchar
                 );
                 '''
@@ -103,17 +106,22 @@ if __name__ == '__main__':
     # create tables
     run_query(create_generation_table)
     run_query(creation_capacity_table)
+    print("Tables created")
 
     # find series IDs to use in API calls
     generation_category = db.bulk_import.find({'category_id': '2134668'},{'childseries': 1,'_id': 0})
     capacity_category = db.bulk_import.find({'category_id': '2134665'},{'childseries': 1,'_id': 0})
-    
+    print("Categories found")
+
     # format series lists
     series_list1 = format_output(generation_category)
     series_list2 = format_output(capacity_category)
+    print("Categories formatted")
 
     # call APIs for all series and insert into postgres table
     call_api_insert(net_generation_series,payload,series_list1,generation_table)
+    print("Generation inserts complete")
     call_api_insert(installed_capacity_series,payload,series_list2,capacity_table)
-
+    print("Capacity inserts complete")
+    
     conn.close()
