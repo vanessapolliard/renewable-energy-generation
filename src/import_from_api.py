@@ -45,7 +45,7 @@ def call_api_insert(url, payload, series_list, table, connection):
     for series_id in series_list:
         result = single_api_query(url, payload, series_id)
         data = result['series'][0]['data']
-        name = result['series'][0]['name'].split(',')[1].replace(" ","")
+        name = result['series'][0]['name'].split(',')[1].replace(" ", "")
         units = result['series'][0]['units']
         for item in data:
             year = int(item[0])
@@ -113,7 +113,7 @@ if __name__ == '__main__':
     call_api_insert(net_generation_series, payload, series_list1,
                     generation_table, postgres_connection)
     print("Generation inserts complete")
-    call_api_insert(installed_capacity_series, payload,s eries_list2,
+    call_api_insert(installed_capacity_series, payload, series_list2,
                     capacity_table, postgres_connection)
     print("Capacity inserts complete")
 

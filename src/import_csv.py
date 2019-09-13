@@ -1,10 +1,12 @@
 from housekeeping import ConnectPostgres
 import requests
-import os, sys
+import os
+import sys
 import time
 import psycopg2
 import getpass
 import csv
+
 
 def convert_csv(InFilePath):
     with open(str(InFilePath), mode="rU") as infile:
@@ -13,6 +15,7 @@ def convert_csv(InFilePath):
             writer = csv.writer(outfile, delimiter='|')
             writer.writerows(reader)
     return outfile
+
 
 if __name__ == '__main__':
     create_investment_table = '''
@@ -79,7 +82,7 @@ if __name__ == '__main__':
                     debt_equity_grant_ratio varchar
                 );
                 '''
-    
+
     # created database outside of script in docker container
     postgres_connection = ConnectPostgres()
     postgres_connection.query(create_investment_table)
@@ -88,8 +91,8 @@ if __name__ == '__main__':
 
     # copy data from file to postgres DB
     with open('../data/All_Data_1990-2012.csv_pipe.txt', 'r') as f:
-        next(f) # Skip the header row.
+        next(f)  # Skip the header row.
         postgres_connection.cur.copy_from(f, 'private_investment', sep='|')
-    
+
     # close connection
     postgres_connection.close()
