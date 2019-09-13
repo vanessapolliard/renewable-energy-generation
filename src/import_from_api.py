@@ -83,9 +83,7 @@ if __name__ == '__main__':
 
     # connect to DBs
     mongo_connection = ConnectMongo()
-
     postgres_connection = ConnectPostgres()
-    postgres_connection.postgres_connect()
 
     # create tables
     postgres_connection.query(create_generation_table)

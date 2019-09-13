@@ -6,7 +6,7 @@ import psycopg2
 import getpass
 import csv
 
-def ConvertCSV(InFilePath):
+def convert_csv(InFilePath):
     with open(str(InFilePath), mode="rU") as infile:
         reader = csv.reader(infile, dialect="excel")
         with open(str(InFilePath) + '_pipe.txt', mode="w") as outfile:
@@ -82,10 +82,9 @@ if __name__ == '__main__':
     
     # created database outside of script in docker container
     postgres_connection = ConnectPostgres()
-    postgres_connection.postgres_connect()
     postgres_connection.query(create_investment_table)
 
-    ConvertCSV('../data/All_Data_1990-2012.csv')
+    convert_csv('../data/All_Data_1990-2012.csv')
 
     # copy data from file to postgres DB
     with open('../data/All_Data_1990-2012.csv_pipe.txt', 'r') as f:

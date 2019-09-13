@@ -35,6 +35,5 @@ if __name__ == '__main__':
                 '''
     # connect to postgres, query, and close
     postgres_connection = ConnectPostgres()
-    postgres_connection.postgres_connect()
     postgres_connection.query(add_cols)
     postgres_connection.close()

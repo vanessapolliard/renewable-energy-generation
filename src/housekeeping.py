@@ -4,11 +4,6 @@ import getpass
 
 class ConnectPostgres(object):
     def __init__(self):
-        self.cur = None
-        self.conn = None
-
-    def postgres_connect(self):
-        # connect to postgres
         upass = getpass.getpass()
         self.conn = psycopg2.connect(database="renewable_energy_generation", user="admin", password=upass, host="localhost", port="5432")
         print("connected")
