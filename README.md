@@ -25,8 +25,8 @@ Using purely the investment data I found the capacity/$ rate for each renewable 
 
 Unsurprisingly the majority of private investments occurred in upper-middle income level countries. Brazil being in that category may be a factor to why there is such a large difference. 
 
-### Trends in Generation
-![Generation Trends](https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/top16generation.png)
+### Trends in Capacity
+![Capacity Trends](https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/top16capacity.png)
 
 I reviewed generation trends in comparison to number of private renewable energy projects from 1980-2016 to see if generation increased significantly when more projects occurred.
 
