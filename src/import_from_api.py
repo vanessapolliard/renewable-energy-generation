@@ -1,26 +1,13 @@
-from bson.json_util import loads
 from pymongo import MongoClient
+from housekeeping import ConnectPostgres, ConnectMongo
 import requests
 import os, sys
 import time
 import psycopg2
 import getpass
 
-# OTHER MONGO - mongoimport --db renewable_energy --collection bulk_import < INTL.txt
-# OTHER POSTGRES - created PostgreSQL database outside of script in docker container
 
-def housekeeping():
-    # globals
-    global conn, cur, db, table
-    # connect to mongo
-    client = MongoClient('localhost',27017)
-    db = client['renewable_energy']
-    table = db['bulk_import'] # includes all keys needed to pull from specific API series_ids for generation and capacity
-    # connect to postgres
-    upass = getpass.getpass()
-    conn = psycopg2.connect(database="renewable_energy_generation", user="admin", password=upass, host="localhost", port="5432")
-    print("connected")
-    cur = conn.cursor()
+# OTHER POSTGRES - created PostgreSQL database outside of script in docker container
 
 # Format Mongo output
 def format_output(data):
@@ -36,7 +23,6 @@ def format_output(data):
     elif data == capacity_category:
         return api_query_vals
 
-# POSTGRESQL
 # Single API request function - not needed but helpful for troubleshooting
 def single_api_query(link, payload, series=None):
     full_link = link + series
@@ -47,12 +33,8 @@ def single_api_query(link, payload, series=None):
         api_response = response.json()
         return api_response
 
-def run_query(query):
-    cur.execute(query)
-    conn.commit()
-
-
-def call_api_insert(url,payload,series_list,table):
+# Call API and insert into Postgres DB after each country call
+def call_api_insert(url,payload,series_list,table,connection):
     for series_id in series_list:
         result = single_api_query(url,payload,series_id)
         data = result['series'][0]['data']
@@ -70,15 +52,14 @@ def call_api_insert(url,payload,series_list,table):
                 insert_query = "INSERT INTO net_generation VALUES (%s, %s, %s, %s)"
             elif table == capacity_table:
                 insert_query = "INSERT INTO installed_capacity VALUES (%s, %s, %s, %s)"
-            cur.execute(insert_query, tuple(insert_vals))
-            conn.commit()
+            connection.cur.execute(insert_query, tuple(insert_vals))
+            connection.conn.commit()
 
 
 if __name__ == '__main__':
     # Define API URLs and API key
     net_generation_series = 'http://api.eia.gov/series/?series_id='
     installed_capacity_series = 'http://api.eia.gov/series/?series_id='
-    # MVP++ us_demand = 'http://api.eia.gov/category/?series_id=EBA.US48-ALL.D.H'
     payload = {'api_key': os.environ['EIA_API_KEY']}
     generation_table = 'net_generation'
     capacity_table = 'installed_capacity'
@@ -101,16 +82,19 @@ if __name__ == '__main__':
                 '''
 
     # connect to DBs
-    housekeeping()
+    mongo_connection = ConnectMongo()
+
+    postgres_connection = ConnectPostgres()
+    postgres_connection.postgres_connect()
 
     # create tables
-    run_query(create_generation_table)
-    run_query(creation_capacity_table)
+    postgres_connection.query(create_generation_table)
+    postgres_connection.query(creation_capacity_table)
     print("Tables created")
 
     # find series IDs to use in API calls
-    generation_category = db.bulk_import.find({'category_id': '2134668'},{'childseries': 1,'_id': 0})
-    capacity_category = db.bulk_import.find({'category_id': '2134665'},{'childseries': 1,'_id': 0})
+    generation_category = mongo_connection.db.bulk_import.find({'category_id': '2134668'},{'childseries': 1,'_id': 0})
+    capacity_category = mongo_connection.db.bulk_import.find({'category_id': '2134665'},{'childseries': 1,'_id': 0})
     print("Categories found")
 
     # format series lists
@@ -119,9 +103,11 @@ if __name__ == '__main__':
     print("Categories formatted")
 
     # call APIs for all series and insert into postgres table
-    call_api_insert(net_generation_series,payload,series_list1,generation_table)
+    call_api_insert(net_generation_series,payload,series_list1,generation_table,postgres_connection)
     print("Generation inserts complete")
-    call_api_insert(installed_capacity_series,payload,series_list2,capacity_table)
+    call_api_insert(installed_capacity_series,payload,series_list2,capacity_table,postgres_connection)
     print("Capacity inserts complete")
-    
-    conn.close()
+
+    # close postgres connection
+    postgres_connection.close()
+    print("DB Connection closed")
