@@ -11,8 +11,6 @@ The World Bank investment data was easily accessed by csv file which I imported 
 The private investment data included 60 different attributes including several I was interested in around government/policy support and percent private investment vs public. Unfortunately after reviewing the data I determined most of these facets had too many null values to be of use. The EIA data simply provided country name and generation/capacity level by year. I used Psycopg2 to access the data I had stored in Postgres and did much of my analysis with Pandas. Unfortunately I didn't find a high correlation in number of projects or amount of investment in relation to capacity change year over year.
 
 ### Highest Private Investments
-![Top 16](https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/top16countries.png)
-
 <p align="center">
   <img src="https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/top16countries.png">
 </p>
@@ -21,17 +19,23 @@ The private investment data included 60 different attributes including several I
 The private investment data was limited to countries categorized as low- and middle-income under World Bank classification. After grouping the investment data by country I was surprised to find that, of the 85 countries in the data, Brazil had by far the highest level of private investments in renewable energy. 
 
 ### Largest Capacity Impact per $ Invested
-![Capacity Impact per $ Invested](https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/capacityperusd.png)
+<p align="center">
+  <img src="https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/capacityperusd.png">
+</p>
 
 Using purely the investment data I found the capacity/$ rate for each renewable energy technology category. It appears that water-related resources have a slightly higher yield in comparison to the other tech categories. After reviewing this grouping I was surprised to see Natural Gas (nonrenewable) as a tech category, but after reviewing the data found that this refers to CSP (concentrated solar power) which is more comparable to natural gas than solar power.
 
 ### Investments by Income Class
-![Investments by Income](https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/privateinvestmentbyincome.png)
+<p align="center">
+  <img src="https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/privateinvestmentbyincome.png">
+</p>
 
 Unsurprisingly the majority of private investments occurred in upper-middle income level countries. Brazil being in that category may be a factor to why there is such a large difference. 
 
 ### Trends in Capacity
-![Capacity Trends](https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/top16capacity.png)
+<p align="center">
+  <img src="https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/top16capacity.png">
+</p>
 
 I reviewed generation trends in comparison to number of private renewable energy projects from 1980-2016 to see if generation increased significantly when more projects occurred.
 
