@@ -4,19 +4,19 @@ import getpass
 
 if __name__ == '__main__':
     add_cols = '''
-                ALTER TABLE installed_capacity 
+                ALTER TABLE installed_capacity
                 ADD COLUMN bkwh_100 FLOAT;
 
-                ALTER TABLE installed_capacity 
+                ALTER TABLE installed_capacity
                 ADD COLUMN bkwh_98 FLOAT;
 
-                ALTER TABLE installed_capacity 
+                ALTER TABLE installed_capacity
                 ADD COLUMN bkwh_95 FLOAT;
 
-                ALTER TABLE installed_capacity 
+                ALTER TABLE installed_capacity
                 ADD COLUMN bkwh_75 FLOAT;
-                
-                ALTER TABLE installed_capacity 
+
+                ALTER TABLE installed_capacity
                 ADD COLUMN bkwh_50 FLOAT;
 
                 UPDATE installed_capacity

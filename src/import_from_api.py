@@ -8,7 +8,7 @@ import psycopg2
 import getpass
 
 
-# OTHER POSTGRES - created PostgreSQL database 
+# OTHER POSTGRES - created PostgreSQL database
 # outside of script in docker container
 
 # Format Mongo output
@@ -23,7 +23,8 @@ def format_output(data):
         .replace("]", "")
     api_query_vals = str_temp.split(", ")
     if data == generation_category:
-        api_query_vals_kwh = [series for series in api_query_vals if 'BKWH' in series]
+        api_query_vals_kwh = [series for series in api_query_vals
+                              if 'BKWH' in series]
         return api_query_vals_kwh
     elif data == capacity_category:
         return api_query_vals
@@ -56,9 +57,11 @@ def call_api_insert(url, payload, series_list, table, connection):
                 value = float(item[1])
             insert_vals = [name, year, value, units]
             if table == generation_table:
-                insert_query = "INSERT INTO net_generation VALUES (%s, %s, %s, %s)"
+                insert_query = "INSERT INTO net_generation VALUES \
+                                (%s, %s, %s, %s)"
             elif table == capacity_table:
-                insert_query = "INSERT INTO installed_capacity VALUES (%s, %s, %s, %s)"
+                insert_query = "INSERT INTO installed_capacity VALUES \
+                                (%s, %s, %s, %s)"
             connection.cur.execute(insert_query, tuple(insert_vals))
             connection.conn.commit()
 
