@@ -1,4 +1,4 @@
-# What impact does private investment have in global renewable energy generation and capacity?
+# Impact of Private Investments in Global Generation and Capacity of Renewable Energy
 In the US, approximately 29% of global warming emissions are created by energy sources, mostly from fossil fuels. Most renewable energy sources generate little to no global warming emissions, even when considering a full lifecycle assessment. The International Energy Agency estimates that energy demand will increase by 70% by 2040 if current trends continue. Renewable energy needs to be a global priority. 
 
 ## Data Sources
