@@ -1,13 +1,15 @@
 from pymongo import MongoClient
 from housekeeping import ConnectPostgres, ConnectMongo
 import requests
-import os, sys
+import os
+import sys
 import time
 import psycopg2
 import getpass
 
 
-# OTHER POSTGRES - created PostgreSQL database outside of script in docker container
+# OTHER POSTGRES - created PostgreSQL database 
+# outside of script in docker container
 
 # Format Mongo output
 def format_output(data):
@@ -15,13 +17,17 @@ def format_output(data):
     for item in data:
         list_temp.append(item)
     # remove formatting from string and turn into list
-    str_temp = str(list_temp).replace("{","").replace("}","").replace("'childseries': ","").replace("'","").replace("[[","[").replace("]]","]").replace("[","").replace("]","")
+    str_temp = str(list_temp).replace("{", "").replace("}", "") \
+        .replace("'childseries': ", "").replace("'", "") \
+        .replace("[[", "[").replace("]]", "]").replace("[", "") \
+        .replace("]", "")
     api_query_vals = str_temp.split(", ")
     if data == generation_category:
         api_query_vals_kwh = [series for series in api_query_vals if 'BKWH' in series]
         return api_query_vals_kwh
     elif data == capacity_category:
         return api_query_vals
+
 
 # Single API request function - not needed but helpful for troubleshooting
 def single_api_query(link, payload, series=None):
@@ -33,10 +39,11 @@ def single_api_query(link, payload, series=None):
         api_response = response.json()
         return api_response
 
+
 # Call API and insert into Postgres DB after each country call
-def call_api_insert(url,payload,series_list,table,connection):
+def call_api_insert(url, payload, series_list, table, connection):
     for series_id in series_list:
-        result = single_api_query(url,payload,series_id)
+        result = single_api_query(url, payload, series_id)
         data = result['series'][0]['data']
         name = result['series'][0]['name'].split(',')[1].replace(" ","")
         units = result['series'][0]['units']
@@ -91,8 +98,10 @@ if __name__ == '__main__':
     print("Tables created")
 
     # find series IDs to use in API calls
-    generation_category = mongo_connection.db.bulk_import.find({'category_id': '2134668'},{'childseries': 1,'_id': 0})
-    capacity_category = mongo_connection.db.bulk_import.find({'category_id': '2134665'},{'childseries': 1,'_id': 0})
+    generation_category = mongo_connection.db.bulk_import \
+        .find({'category_id': '2134668'}, {'childseries': 1, '_id': 0})
+    capacity_category = mongo_connection.db.bulk_import \
+        .find({'category_id': '2134665'}, {'childseries': 1, '_id': 0})
     print("Categories found")
 
     # format series lists
@@ -101,9 +110,11 @@ if __name__ == '__main__':
     print("Categories formatted")
 
     # call APIs for all series and insert into postgres table
-    call_api_insert(net_generation_series,payload,series_list1,generation_table,postgres_connection)
+    call_api_insert(net_generation_series, payload, series_list1,
+                    generation_table, postgres_connection)
     print("Generation inserts complete")
-    call_api_insert(installed_capacity_series,payload,series_list2,capacity_table,postgres_connection)
+    call_api_insert(installed_capacity_series, payload,s eries_list2,
+                    capacity_table, postgres_connection)
     print("Capacity inserts complete")
 
     # close postgres connection

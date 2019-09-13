@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import psycopg2
 import getpass
 
+
 class ConnectPostgres(object):
     def __init__(self):
         upass = getpass.getpass()
@@ -12,13 +13,17 @@ class ConnectPostgres(object):
     def query(self, sql):
         self.cur.execute(sql)
         self.conn.commit()
-    
+
     def close(self):
         self.conn.close()
-    
+
+
 class ConnectMongo(object):
     def __init__(self):
-        self.client = MongoClient('localhost',27017)
+        self.client = MongoClient('localhost', 27017)
         self.db = self.client['renewable_energy']
-        self.table = self.db['bulk_import'] # includes all keys needed to pull from specific API series_ids for generation and capacity
-        # table created/populated outside script - mongoimport --db renewable_energy --collection bulk_import < INTL.txt
+        self.table = self.db['bulk_import']  
+        # includes all keys needed to pull from specific API 
+        # series_ids for generation and capacity
+        # table created/populated outside script
+        # mongoimport --db renewable_energy --collection bulk_import < INTL.txt
