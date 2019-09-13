@@ -12,26 +12,32 @@ The private investment data included 60 different attributes including several I
 
 ### Highest Private Investments
 ![Top 16](https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/top16countries.png)
+
 The private investment data was limited to countries categorized as low- and middle-income under World Bank classification. After grouping the investment data by country I was surprised to find that, of the 85 countries in the data, Brazil had by far the highest level of private investments in renewable energy. 
 
 ### Largest Capacity Impact per $ Invested
 ![Capacity Impact per $ Invested](https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/capacityperusd.png)
+
 Using purely the investment data I found the capacity/$ rate for each renewable energy technology category. It appears that water-related resources have a slightly higher yield in comparison to the other tech categories. After reviewing this grouping I was surprised to see Natural Gas as a tech category in addition to Biogas (natural gas is not typically considered renewable but is sometimes referred to in place of Biogas).
 
 ### Investments by Income Class
 ![Investments by Income](https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/privateinvestmentbyincome.png)
+
 Unsurprisingly the majority of private investments occurred in upper-middle income level countries. Brazil being in that category may be a factor to why there is such a large difference. 
 
 ### Trends in Generation
-![Generation Trends](https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/top16generation.png)
+!][Generation Trends](https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/top16generation.png)
+
 I reviewed generation trends in comparison to number of private renewable energy projects from 1980-2016 to see if generation increased significantly when more projects occurred.
 
 ### Trends in Generation/Capacity Ratio
 ![Capacity Impact per $ Invested](https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/top16ratio.png)
+
 Because generation typically increased with capacity I didn't find any impact from private projects.
 
 ### Capacity Change YOY
 ![Capacity Change YOY](https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/capacityyoy.png)
+
 Capacity change is typically positive with a few exceptions for all top 16 countries. Unfortunately I didn't find a correlation between private investment project count or amount in year of year capacity change.
 
 ## Resources
