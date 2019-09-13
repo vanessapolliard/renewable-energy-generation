@@ -13,7 +13,7 @@ The private investment data included 60 different attributes including several I
 ### Highest Private Investments
 ![Top 16](https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/top16countries.png)
 
-<a href="url"><img src="https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/top16countries.png" align="center" height="250" ></a>
+<a href="url"><img src="https://github.com/vanessapolliard/renewable-energy-generation/blob/master/images/top16countries.png" align="center" height="350" ></a>
 
 The private investment data was limited to countries categorized as low- and middle-income under World Bank classification. After grouping the investment data by country I was surprised to find that, of the 85 countries in the data, Brazil had by far the highest level of private investments in renewable energy. 
 
